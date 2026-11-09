@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Sky Solve</title>
+    <link rel="stylesheet" href="../static/styles/bootstrap.min.css">
+    <script src="/static/js/jquery_3.5.1.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+        body {
+            background-color: rgba(114, 106, 109, 0.952);
+            color:#f3c5c5
+        }
+        
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:active,
+        .btn-primary:visited {
+            background-color: #e02020 !important;
+        }
+        
+        .btn-primary:hover {
+            background-color: #f54e4eb9 !important;
+        }
+        
+        .slidecontainer {
+            width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: #6e0303;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+        
+        .slider:hover {
+            opacity: 1;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #f82727;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .nightColor {
+            color:#f74a4a;
+            background-color:#1f0303;
+        }
+        .fishes{
+            position: relative;
+            top: 100;
+            left: 100;
+        }
+        .fish {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+        }
+    </style>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        .img-magnifier-container {
+            filter: brightness(300%);
+            position: relative;
+        }
+        
+        .img-magnifier-glass {
+            position: absolute;
+            border: 3px solid #000;
+            border-radius: 50%;
+            cursor: none;
+            /*Set the size of the magnifier glass:*/
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+
+
+    <style>
+        #myProgress {
+            width: 100%;
+            background-color: #ddd;
+        }
+        
+        #myBar {
+            width: 1%;
+            height: 30px;
+            text-align: left;
+            background-color: #cf440c;
+        }
+    </style>
+
+    <!--    toggle switch -->
+    <style>
+        .switchT {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 24px;
+        }
+        
+        .switchT input {
+            opacity: 50;
+            width: 0;
+            height: 0;
+        }
+        
+        .sliderT {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgb(134, 19, 19);
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        .sliderT:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: rgb(241, 65, 65);
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        input::selection {
+            background-color: #8b1717;
+        }
+        input:checked+.sliderT {
+            background-color: #f0a9a9;
+        }
+        
+        input:focus+.sliderT {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        
+        input:checked+.sliderT:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+        /* Rounded sliders */
+        
+        .sliderT.round {
+            border-radius: 34px;
+        }
+        
+        .sliderT.round:before {
+            border-radius: 50%;
+        }
+
+    
+        /* The Modal (background) */
+
+        .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        color:#f0a9a9
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+        background-color: #110a0a;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        color:#9b6a6a;
+        width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        }
+        fieldset {
+            margin: 8px;
+            border: 1px solid silver;
+            padding: 8px;    
+            border-radius: 4px;
+            color:#f0d3d3
+        }
+        body {
+            background-color: rgb(71, 35, 40);
+        }
+        button:hover {
+            background-color:#8b1717
+        }
+
+    </style>
+    </head>
+    <body >
+        <div class="container-fluid ">
+            <div class="row backgroud-color:white">
+                <div class="row">
+                    <button title="stop taking images and wait for a new command"
+                        class="btn nightColor" style="margin:10px; "id="idPause" ">Pause</button>
+                    <button title="Take images but just show them without solving them."
+                        type="button" class="btn nightColor"  style="margin:10px;" id="idAlign" ">Align</button>
+                    <button title="start solving current images." 
+                        type="button" class="btn nightColor"  style="margin:10px;" id = "idSolve" ">Solve</button>
+                    <button title="show saved images"
+                         type="button" class="btn nightColor"  style="margin:10px;" id = "testMode" >Replay images</button>
+                    <button title="Get previous image in history"
+                        type="button" class="btn nightColor" style="display: none;" id="stepPrev">Previous Image</button>
+                    <button title="Get Next image in history"
+                        type="button" class="btn nightColor" style="display: none;" id="stepNext">Next Image</button>
+                    <button title="Jump to specified history file number"
+                        type="button" class="btn nightColor" data-toggle="collapse" data-target="#historyNdx" id="historyIndex">#</button>
+                    <button title="Delete history file"
+                        type="button" class="btn nightColor" onClick="confirmDeleteFile()"  id="deleteFile">Delete</button>
+                    
+                    <button title="Solve the current history image"
+                        type="button" class="btn nightColor" style="display: none;" id="solveThis">Solve This one</button>
+                    <button type="button" class="btn nightColor" data-toggle="collapse" data-target="#solveHistory" id="resultsCfg">results Config</button>
+                    <button type="button" class="btn nightColor" style="margin:10px;" id="demoMode" >Demo</button>
+                
+                    <!-- Trigger/Open The solver params -->
+                    <button id="openSolverConfig" class="btn nightColor">Solver Params</button>
+                    <button type="button" class="btn nightColor" data-toggle="collapse" data-target="#helpButtons">help</button>
+                    <buton type=""button" class = "btn nightColor" id="showMore">...</buton>
+
+                </div>
+            </div>
+            <div class = "row">
+                <div class = "collapse " id="historyNdx">
+                    <form action="/historyNdx" class="btn  nightColor" method="POST">
+                        <label for="image number"class="btn nightColor">Image number:</label>
+                        <input type="number" class="nightColor" style="background-color: rgb(70, 48, 48);" id="hNdx" name="hNdx" step="1">
+                        <input class="btn nightColor"type="submit" value="Select" style="background-color: rgb(70, 48, 48);">
+                      </form> 
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="collapse col text-center" id="helpButtons">
+                        <button type="button" class="btn  nightColor" data-toggle="collapse" data-target="#helpScreen" style="margin-right:2px;">General</button>
+                        <button type="button" class="btn nightColor" data-toggle="collapse" style="margin-right:2px;" data-target="#cameraHelp"> Camera</button>
+                        <button type="button" class="btn  nightColor" data-toggle="collapse" style="margin-right:2px;" data-target="#solutionHelp">Results Config</button>
+                        <button type="button" class="btn  nightColor" data-toggle="collapse" style="margin-right:2px;" data-target="#solverHelp">Solver</button>
+                        <button type="button" class="btn  nightColor" data-toggle="collapse" style="margin-right:2px;" data-target="#demoHelp">History and Demo</button>
+                        <button type="button" class="btn  nightColor" id="reboot" style="margin-left:100px;" ">Reboot</button>
+                        <button type="button" class="btn  nightColor" id="restartc" style="margin-left:30px;" ">Restart</button>
+                        <button type="button" class="btn  nightColor" id="shutdown" style="margin-left:30px;" ">Shutdown</button>
+                        <button type="button" class="btn  nightColor" id="update" style="margin-left:30px;" ">update</button>
+                     
+                        <button type="button" class="btn  nightColor" data-toggle="collapse" data-target="#debugScreen" id="debug" style="margin-left:30px;" ">Debug</button>      
+                    </div>
+            </div>
+            <div id="helpScreen" class="collapse">
+                <ul class= "nightColor list-unstyled">
+                    <li><p>The buttons along the top sets the mode.</p></li>
+                    <li> <p>Starts in <b>Align</b> mode which is used to setup camera parameters and manually center view with center of scope.</p></li>
+                    <li><p><b>Pause</b> mode stops camera from taking images. Whereas Align or Solve mode starts the loop and enables the camera to take images.</p></li>
+                    <li><p><b>Solve</b> mode will try to solve each image taken and will loop as fast as the shutter and solving allow. <br>
+                           The solution will be stored in a file that the encoder.py program will see.  (Encoder.py will be run automatically and will update
+                           SkySafari when contacted by it.</p></li>
+                    <li><p><b>Replay Images</b> will stop the camera and allow you to view and solve images from your observing history (see history help)<br>
+                            </p></li>
+                    
+                    <li>
+                        <p>
+                            The current image is displayed below the status display.<br>
+                            
+                            The log is displayed below the image.   The log will display data from the solve operation as well as from other commands.
+                        </p>
+                    </li>
+
+                </ul>
+            </div>
+            <div id="cameraHelp" class="collapse">
+                <ul class="nightColor list-unstyled">
+                    <li> <p>The <b>Camera Params</b> button displays three camera parameter: shutter, ISO, and frame size (resolution)<br>
+                        It also displays a focus toggle switch and image display size controls.</p>
+                    </li>
+                    <li> <p>It an take a little time for a changed value of shutter, ISO, or Frame Size to take affect.<br>
+                        ISO will take at least 10 seconds.</p>
+                    </li>
+                    <li>
+                        <p>
+                            The <b>frame size</b> (resolution) sets the size of the image taken by the camera.  The smaller it is the faster the solver will work.<br>
+                            However smaller images are down sampled and may lose star images.  You need to find a trade off between speed and desired resolution.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The Focus Bar shows the amount of contrast in the image.  Higher contrast is usually a good indication of good focus.
+                             The bar will change values as you slowly adjust focus.  Try to adjust for maximum value.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The <b>+/- zoom buttons change the size of the image.</b>
+                        </p>
+                    </li>
+
+                </ul>
+            </div>
+
+            <div id="solutionHelp" class="collapse">
+
+                <h5 class = "nightColor">Results Config</h5>
+                <dl class=" row nightColor">
+                    <dt class = "col-sm-2">Clear log</dt>
+                    <dd class="col-sm-4">Clears the log display on the screen.</dd>
+                    <div class="w-100"></div>
+
+                <dt class="col-sm-2">Show found stars</dt>
+                    <dd class = "col-sm-4">Displays what the solver thinks are stars in the image. </dd>
+                    <div class = "w-100"></div>
+
+                <dt class="col-sm-2">Setup observing session</dt>
+                    <dd class="col-sm-5"> Configure an observing session.
+                    <div class="w-100"></div>
+
+                        <ul class = "nightColor list">
+                            <li> <p> Save either or both the input image or the resulting location for each solved imaged in the observing history.<br>
+                            You can setup what gets saved using the <b> Setup Observing session</b> button. </p>  </li>
+                            <li>
+                                <p>
+                                    Set how much the solved location must change before it saves a new position and image.
+                                </p>
+                            </li>
+                        </ul>
+                    </dd>
+                    
+                
+            </div>
+            <div- id="solverHelp" class="collapse">
+            <ul class="nightColor list-unstyled">
+                <li>
+                    <p>
+                        <h5>Params</h5>
+                        <p>The solver uses several params to help it understand the image.</p>  
+                        <ul>Field Width.  Which can be 1 of three options.
+                            <ol>
+                                <li>arc seconds per pixel. It depends on the lens and sample size which is controled by image width.
+                                    <ul>
+                                        <li>27 arcsec/pix for 50mm lens</li>
+                                        <li>25mm lens
+                                            <ul>
+                                                <li>50 arcsec/pix for image width 1024x768</li>
+                                                <li>40 arcsec.oux for image witdth of 1280 x 960</li>                                       
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>filed width in degees. Depends on lens.</li>
+                                <li>Unknown let the software figure it out<br> Takes more time to solve. 
+                                    <p>Can be used to determine the exact values by looking at the log from a solved image.</p></li>
+                            </ol>
+                        </ul>
+                    </p>
+                </li>
+            </ul>
+
+            </div->
+            <div id="demoHelp" class="collapse">
+                <ul class="nightColor list-unstyled">
+                    <li>
+                        <p>
+                            <h5>History</h5>
+                            Images that solve to a star location can be saved in the history for later review as setup by the <b>Results cfg</b> button.
+                            To enable history images press the <b>"Replay Images"</b> button.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The <b>Replay images</b> button enables the replay controls and displays the names of the images
+                             it finds in the history on the log display.  It dislays the first image where a camera image would appear.<br> 
+                        </p>
+                        <p>You can press the <b>"Solve This one"</b> button to solve the current image.  </p>
+                        <p>You press the <b>>"Solve"</b> button to solve this image and then automatically go to the next image and solve it. Repeating getting an image from the 
+                            history file and solving each one till the end of the list is found.  Usefull for playing back all the images in sequence to show up on the 
+                            skysafari screen.</p>
+                    </li>
+                    <li>
+                        <h5>Demo</h5>
+                        <p>Demo enables replay images mode and then directs the playback mode to a few prerecorded sky images that you can try out to solve in<br>
+                             replay images mode. It is handy for to play with before you have actual images of your own.
+                             <p>For the needed solving parameters see solving config profile list for profiles with the same name as the file.</p>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <form>
+                      <input  type="checkbox" id="autoStatusCB" checked="checked"  
+                        onclick="updateStatusField() ; checked">-
+                    </label>
+                </form>
+                <div class="nightColor">Status:&nbsp</div>
+                <div id="statusField" class="nightColor">
+                </div>
+                <div id="verboseSolve" class = "col-10 nightColor">
+                </div>
+            </div>
+
+        </div>
+
+
+        
+        <div id="skyConfig">
+            <div id="advancedShutter" class="collapse">
+                <div class = "row">
+                        <form action="/setShutter" class="btn  nightColor" method="POST">
+                            <label for="setShutter"class="btn nightColor">Shutter</label>
+                            <input type="number" class="nightColor"  style="background-color: rgb(70, 48, 48);" id="setShutter" name="setShutter" step=".0005">
+                            <input class="btn nightColor"type="submit" value="Apply" style="background-color: rgb(70, 48, 48);">
+                        </form> 
+
+                        <form action="/setISO" class="btn  nightColor" method="POST">
+                            <label for="setISO"class="btn nightColor">ISO</label>
+                            <input type="number" class="nightColor"  style="background-color: rgb(70, 48, 48);" id="setISO" name="setISO" step="1">
+                            <input class="btn nightColor"type="submit" value="Apply" style="background-color: rgb(70, 48, 48);">
+                        </form> 
+                </div>
+            </div>
+            <div class="btn-group" role="group" aria-label="b">
+
+                
+                <label class=" text-danger" for="shutterSelect" >Shutter Speed:</label>
+                <select class=" form-control-sm nightColor"  id="shutterSelect">
+                    {% for datum in shutterData %}
+                    <option class="bg_dark text-warning" value = {{ datum }} {%if  datum  == shutterValue %}   selected {% endif %}>{{ datum }} </option> 
+                   {% endfor %}
+
+
+                </select> 
+
+
+                <label class=" text-danger " style="margin-left:20px;" for="ISOSelect">ISO:</label>
+                <select class=" form-control-sm nightColor"  id="ISOSelect">
+
+                    {% for datum in skyIsoData %}
+                    <option class="bg_dark text-warning" value = {{ datum }}  {% if datum == ISOValue %} selected {% endif %}>{{ datum }}   </option> 
+                    {% endfor %}
+    
+                </select> 
+
+                <label class=" text-danger" style="margin-left:20px;" for="frameSelect">Image Resolution:</label>
+                <select class=" form-control-sm nightColor"  id="frameSelect">
+                        {% for datum in skyFrameData %}
+                        <option class="bg_dark text-warning" value={{ datum}} {% if datum == frameValue %} selected {% endif %} >{{ datum }}</option> 
+                        {% endfor %}
+
+                </select>
+            </div>
+
+                <div class = "grid">
+                    <div class="row ">
+                        <button type="button" class="pl-5 btn  nightColor" onclick="increaseMagnification()">+++</button>
+                        <button type="button" class="btn  nightColor" onclick="decreaseMagnification()">---</button>
+                        <button type="button" class="btn  nightColor" onclick="brighten()">Bright</button> 
+                        <button type="button" class="btn  nightColor" onclick="brightNormal()"> norm</button> 
+                        <button type="button" class="btn  nightColor" onclick="darken()">dark</button> 
+                        <button type="button" class="btn  nightColor" id="idSaveCurrent">save current Image</button> 
+
+                        <a roll = "button" class="btn  nightColor" download href="downloadImage"
+                            id="idDownloadImage">Download Image</button> </a>
+                        
+                    </div>
+                </div>
+
+            
+        </div>
+
+
+        <!-- The Modal  for config params-->
+        <div id="solveParamsModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+
+                <span id="solveParamsClose" class="close">&times;</span>
+                <h2>Plate Solver Parameters</h2>
+
+
+
+                <form id="solverParamsForm" action="/applySolve2" method="POST">
+                   
+                    <label for="solveatStartup"> Start Solver at startup </label>
+                    <input type="checkbox"  style="margin:10px;" id="solveatStartup" name="startupType" {{ 'checked' if startup else ''}}>
+                    <br>
+                    <input type="submit" class="btn btn-primary"  value="Apply">
+
+                    <div id="astrometryForm" >
+                        <p>These default values are good for the RPI High Quality Camera with 25mm  lens"<br>
+                            For more info about the solver see <a href=" http://astrometry.net/doc/readme.html"> astrometry.net/doc/readme.html</a> 
+                            Under solving heading.</p>
+                   <div class="row">
+                            <div class="col-sm-4">
+                                <Label for="profile">Profile</Label>
+                                <select class=" form-control-sm nightColor" name="currentProfile" id="solveProfile">
+                                    {% for key, val in profiles.items() %}
+                                <option class="bg_dark text-warning" value="{{key}}" >{{ key }}</option> 
+                                {% endfor %}
+                
+                                </select> 
+
+                            </div>
+
+                            <div class="col-sm-5">
+                                <button type="button" class="btn nightColor" data-toggle="collapse" data-target="#addNewProfileNamePane">New Profile</button>
+                                <div id="addNewProfileNamePane" class="collapse">
+                                    <label for="newProfilename">New Profile Name:</label>
+                                    <textarea id="newProfilename" class = "nightColor" name="newname" rows="1" cols="50">
+                                    </textarea>
+                    
+
+                                    <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#addNewProfileNamePane">Close</button>
+                                    <button type="button" id="addToProfiles" class="btn btn-primary">Add to Profiles</button>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <button type="button" id="deleteProfile" class="btn  nightColor">Delete</button>
+                            </div>
+                        </div> 
+                        
+                        <fieldset class = "nightColor" style="background-color: rgb(48, 12, 2);" > 
+                                <legend>Image Field Size </legend>
+
+                            <input type="radio" id="FieldWidthModeaPP" name="FieldWidthMode" value="FieldWidthModeaPP" >
+                            <label for="FieldWidthaPPLow">Arc Seconds per Pixel low  :</label>
+                            <input  id="FieldWidthaPPLow"  class="nightColor"
+                                type="number" step=".1" name="aPPLowValue" > 
+                            
+                            <label for="FieldWidthaPPHi">Arc Seconds per Pixel hi  :</label>
+                            <input id="FieldWidthaPPHi" width = "100" class="nightColor" type="number" step=".1" name="aPPHiValue"
+                                > low value For 16mm lens try 40<br>
+                            
+                            <input type="radio"  id="FieldWidthModeField" name="FieldWidthMode" value="FieldWidthModeField"  >
+                            <label for="fieldLoValue">Field Width Deg  low</label>
+                            <input type="number" class="nightColor" name="fieldLoValue" id="fieldLoValue" 
+                                step=".1">
+
+                            <label for="fieldHiValue" style="margin-left:10px;">High </label>
+                            <input class="nightColor" id="fieldHiValue" name="fieldHiValue" type="number" step=".1" ><br>
+                            
+                            <input type="radio" id="FieldWidthModeOther" name="FieldWidthMode" value="FieldWidthModeOther" }>
+                            <label for="other">Software Determined (takes longer to solve)</label>
+                            </fieldset>   
+                        <br>  
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label for="CPUtimeout">Max time for Solve</label>
+                                <input type = "number" id="CPUtimeout"  name="CPUTimeout" class=" from-control nightColor"> Secs<br>
+                            </div>
+                            <div class="col-sm-8">
+                                <label for="additionalParms">  Additional command line parameters</label>
+                                <input type="text"  style="margin-left:5px;" size="50" id="additionalParms" name="additionalParms"class="nightColor"
+                                value="abcdkeiw  wert">
+                            </div>
+                        </div>
+                        <label for="solveDepth">Depth</label>
+                        <input type = "number" id="SolveDepth" name = "solveDepth" class="nightColor" > How many of the brightest stars
+                        <label for="SolveSigma" style="margin-left:20px;">Sigma </label>
+                        <input type = "number" width="6" id="SolveSigma" name = "solveSigma" class="nightColor"  Lower numbers show more stars<br>
+                        <label for = "searchRadius"> Search Radius in Deg from last solved location (blank for do not use)  :</label>
+                        <input type = "number" id = "searchRadius" class="nightColor" name="searchRadius"  ><br>
+
+                        <label for="showStars">Show found stars (slows the solve)</label>
+                        <input type="checkbox"style="margin:10px;" id="showStars", name="showStars"   >     
+                        <label for="idverbose"> verbose (but slower) </label>
+                        <input type="checkbox"  style="margin:10px;" id="idverbose" name="verbose" {{ 'checked' if obsParms['verbose'] else ''}}>           
+                </div> 
+
+
+                </form>
+            </div> 
+
+        </div>
+
+         <!-- Modal for debug form-->
+         <div id="debugScreen" class="modal">
+            <div class="modal-content">
+                <span id="debugClose" class="close">&times;</span>
+
+                <form action="/Debug" method="POST">
+                    <fieldset class = "nightColor" style="background-color: rgb(48, 12, 2);" >  <legend>Debug </legend>
+
+                    <div>
+                        <input type="checkbox" id="enableDebug", name="enableDebug"  >
+                        <label for="enableDebug">Enable debug write to log file</label>  
+                        
+
+                    </div>
+                        <br>
+                        <input type="submit" class="btn nightColor" value="Submit">
+                        </fieldset>
+                    
+                </form>
+                <a class="btn nightColor" role="button" href="/static/skysolve.log"
+                download="skysolve.log" style="margin:20px; ""> Download debug log</a>
+            </div>
+        </div>
+        <!-- The Modal  for stars image-->
+        <div id="starsModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span id="starsClose" class="close">&times;</span>
+                <img src="/static/cap-objs.png" id="starsSrc"/>
+
+            </div>
+        </div>
+
+        <!-- The Modal for solved image-->
+        <div id="solvedImageModal" class="modal">
+            <div class="modal-content">
+                <span id="solutionClose" class="close">&times;</span>
+                <img src="/static/cap-ngcc.png" id="solutionSrc"/>
+            </div>
+        </div>
+
+        <!-- Modal for observing session-->
+        <div id="observingModal" class="modal">
+            <div class="modal-content">
+                <span id="observnigClose" class="close">&times;</span>
+
+                <form action="/Observe" method="POST">
+                    <fieldset class = "nightColor" style="background-color: rgb(48, 12, 2);" >  <legend>Observing log </legend>
+                        <p> Save each solved postion in a file for later play back to Skysafari.<br>
+                            Can also save each image.</p>
+                    <div>
+                        <a class="btn nightColor" role="button" href="/static/obs.log"
+                            download="observinglog.txt" style="margin:20px; ""> Download observing log text file</a>
+
+                        <button class="btn nightColor" id="clearImages">clear observing history images</button>
+                        <a class="btn nightColor" role="button" href="/zip"
+                            download="historyImages.zip" style="margin:20px; "> Download images as a zip</a>
+                            
+                        </div>
+
+                    <input type="checkbox" id="saveImages", name="saveImages" {{ 'checked' if obsParms['saveImages'] else ''}} >
+                    <label for="saveImages">Save each solved image to history.</label>   
+                    <label style = "margin-left:20px;" for = "delta"> Delta of position needed to be different in order to be saved. (in degees) :</label>
+                    <input type="number" step=".01" name="deltaDiff" value = {{obsParms['obsDelta' ] }} class="nightColor">
+                    <br>
+                    <input type="checkbox" style="margin-left: 30px;" id="SaveObS" name="SaveOBS" {{ 'checked' if obsParms['savePosition'] else ''}}>
+                    <label for="SaveObs">Append each solved position to observing log.</label><br>
+ 
+
+                    <br>
+                    <input type="submit" class="btn nightColor" value="Submit">
+                    </fieldset>
+                </form>
+                <br>
+                <fieldset class = "nightColor" style="background-color: rgb(48, 12, 2);" >  <legend>Observing log replay </legend>
+
+    
+                Replay of observations (send each to SykySafari)<button style="margin:20px"; id="startObs"; class="btn nightColor">Start </button>
+                <button class="btn nightColor" style="margin-right: 30px" id = "clearObsLog"> clear Observing log</button>
+                <div> <button class="btn nightColor" style= "margin:10px;" id="prevObs"> < </button>
+
+                    <button class="btn nightColor" style= "margin:10px;" id="nextObs"> > </button>
+                    <input class="nightColor" type = "text"; id="currentObs"; size="80"> </input>
+                </div>
+
+                </fieldset>
+
+            </div>
+        </div>
+
+        <div id="solveHistory" class="collapse" >
+            <button type="button" class="btn nightColor" id="ClearLog" >Clear Log</button>        
+             <button type="button" class="btn nightColor" id="ShowStars" >show found stars</button>
+             <button type="button" class="btn nightColor" id="observingSession"> setup observing session</button>
+            
+       </div>
+
+ 
+        <div class="collapse" id="collapseFocusBar" data-shown="false">
+            <div id="myProgress"></div>
+            <div id="myBar"></div>
+        </div>
+    </div>
+    <div style="margin-top:5px; margin-left:20px"class="btn nightColor"
+         class="col mx-2">
+            <label class="form-check-label nightColor">
+              <input  type="checkbox" id="enableSolution"  class=" pl-5 form-check-input" 
+                onclick="enableSolution()">show last solution 
+            </label>
+        
+      
+    </div>
+        <div ,class = "img-magnifier-container " style="position: relative; left: 100; top: 100;">
+            <img src="{{ url_for('video_feed') }}" id="skyImage" style="filter: brightness(600%);">
+            <img src="/static/cap-ngc.png" id="solu"  style = "display: none;" class="fishes">
+
+        </div>
+        <p><div style="color:rgb(160, 0, 0); background:rgb(2, 0, 0);" >Log:</div>
+            
+        <div style="overflow-y: scroll;  height: 300px; color:rgb(155, 0, 0); background:rgb(2, 0, 9);"  id="solveStatusText">
+              SkySolve is ready</div></p>
+
+
+        <!-- SCRIPTS  -------------------------------------------->
+
+        <script>   
+
+        
+
+        
+            audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+            function beep(freq) {
+                var oscillator = audioCtx.createOscillator();
+                var gainNode = audioCtx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                gainNode.gain.value = .5;
+                oscillator.frequency.value = freq;
+                oscillator.type = 'triangle';
+
+                oscillator.start();
+
+                setTimeout(
+                    function() {
+                    oscillator.stop();
+                    },
+                    100
+                );
+            };
+            $(document).ready(function(){
+  
+                var v = "{{profiles|safe}}"
+   
+                v = v.replace(/False/g,"false")
+                v = v.replace(/True/g,"true")
+
+                setProfiles(v.replace(/'/g,"\""));
+
+                console.log("solveP", "{{solveP}}")
+                setSolverParams( "{{solveP}}");
+                $('#solveProfile').val("{{solveP}}");
+
+                setIniShutter("{{cameraParms['shutter']}}");
+
+                setIniISO("{{cameraParms['ISO']}}");
+
+                setIniFrame("{{cameraParms['frame'] }}");
+                increaseMagnification();
+                decreaseMagnification() ;
+
+
+            });
+
+            window.onload = function () {
+
+                var logo = document.getElementById('skyImage');
+
+                logo.onload = function () {
+                    console.log ("The image has loaded!");		
+                };
+
+
+            };
+            // Get the modal solve param config
+            var solveParamsModal = document.getElementById("solveParamsModal");
+
+            // Get the button that opens the modal
+            var btn = document.getElementById("openSolverConfig");
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementById("solveParamsClose");
+
+            // When the user clicks on the button, open the modal
+            btn.onclick = function() {
+
+                solveParamsModal.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+            solveParamsModal.style.display = "none";
+            }
+
+
+
+            // Get the button that opens the modal image
+            var btn = document.getElementById("ShowStars");
+
+            // Get the <span> element that closes the modal
+            var starsspan = document.getElementById("starsClose");
+
+            // When the user clicks on the button, open the modal
+            btn.onclick = function() {
+                var src = document.getElementById("starsSrc");
+
+                var d = new Date();
+                var n = d.getTime();
+                var fn = "/static/cap-objs.png";
+                var x = fn.concat( "?dummy=",n,"?");
+                src.src = x
+                starsModal.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            starsspan.onclick = function() {
+            starsModal.style.display = "none";
+            }
+
+
+
+            // Get the button that opens the debug modal form
+            var debugbtn = document.getElementById("debug");
+
+            // Get the <span> element that closes the modal
+            var debugspan = document.getElementById("debugClose");
+
+            // When the user clicks on the button, open the modal
+            debugbtn.onclick = function() {
+                debugScreen.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            debugspan.onclick = function() {
+                debugScreen.style.display = "none";
+            }
+
+            // Get the button that opens the modal image
+            var btn = document.getElementById("observingSession");
+
+            // Get the <span> element that closes the modal
+            var observingspan = document.getElementById("observnigClose");
+
+            // When the user clicks on the button, open the modal
+            btn.onclick = function() {
+                observingModal.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            observingspan.onclick = function() {
+                observingModal.style.display = "none";
+            }
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == observingModal) {
+                    observingModal.style.display = "none";
+                }
+                if (event.target == solveParamsModal) {
+                    solveParamsModal.style.display = "none";
+                }
+                if (event.target == starsModal) {
+                    starsModal.style.display = "none";
+                }
+                if (event.target == debugScreen){
+                    debugScreen.style.display = "none";
+                }
+            }
+            var lastStatus = '';
+            var solutionDisplayEnabled = false;
+            function enableSolution() {
+                var time = new Date()
+                var ischecked = document.getElementById("enableSolution").checked;
+                solutionDisplayEnabled = ischecked;
+                var src = document.getElementById("solu");
+                if ( ischecked){
+
+                    src.style.display = 'inline'
+                }
+                else {
+                    src.style.display = 'none'
+                }
+
+                
+                $.ajax({
+                    url: '/enablesolutionDisplay',
+                    data: {'checked':ischecked},
+                    type: 'post',
+                    success: function(data) {
+
+   
+                    },
+
+
+                    complete: function(data) {
+
+
+                    }
+                
+
+                });
+            }
+            function  showSolution(){
+
+                if ( !solutionDisplayEnabled || sks.consts.currentProfile === 'Tetra3')
+                    return
+
+                var src = document.getElementById("solu");
+                var d = new Date();
+                var n = d.getTime();
+                var fn = "/static/cap-ngcc.png";
+                var x = fn.concat( "?dummy=",n,"?");
+                src.src = x
+                //src.style.display = "inline";
+            }
+            var position = 0;
+            var output = document.getElementById('solveStatusText')
+            function handleNewData() {
+                $.ajax({
+                            url: '/solveLog',
+                            type: 'get',
+                            success: function(data) {
+                                if (data != ''){
+                                    // the response text include the entire response so far
+                                    // split the messages, then take the messages that haven't been handled yet
+                                    // position tracks how many messages have been handled
+                                    // messages end with a newline, so split will always show one extra empty message at the end
+                                    var messages = data.split('\n');
+
+                                    messages.forEach(function(value) {
+
+                                        // build and append a new item to a list to log all output
+                                        //value = "<br>" + value;
+                                        output.innerHTML += ('<br>' + value);
+                                        if (value.includes('annotation ready')){
+                                            console.log('aready',value)
+                                            setTimeout(showSolution,500)
+                                          
+                                        }
+                                        else if (value.includes('solved with')){
+                                            beep(1840);
+                                        }
+                                        else if (value.includes('Failed')){
+                                            beep(200);
+                                        }
+                                   
+                                    });
+                                    position = messages.length - 1;
+                                    if (output.innerHTML.length > 10000){
+                                        var list = output.innerHTML.split('<br>')
+                                        var shorter = list.splice(1,list.length/2)
+                                        //output.innerHTML = shorter.join('<br>')
+                                    }
+                                    position = messages.length - 1;
+                                    output.scrollTop = output.scrollHeight;
+                                }
+
+
+
+
+                            },
+                            complete: function(data) {
+
+                        }
+                    });
+            
+            }    
+
+            var timer;
+            console.log('setting timer')
+            setInterval(handleNewData, 500);
+        </script>
+
+        <script>
+
+            $("#ISOMenu>button ").click(function() {
+                let x = $(this).text();
+                $("#ISOButton").html(x)
+                $.post("/setISO/" + x, data = {
+                    suggest: x
+                }, function(result) {
+
+                });
+            });
+        </script>
+
+        <!-- Update status and clear timeout if needed-->
+        <script>
+           
+            var lastStatus = '';
+            function updateStatusField() {
+                var time = new Date()
+                $.ajax({
+                    url: '/skyStatus',
+                    data: {'time': Date.now().toString()},
+                    type: 'post',
+                    success: function(data) {
+ 
+                            // Perform operation on return value
+                        var st = document.getElementById("statusField");
+                        
+                        if (data != lastStatus){
+                            if (data == ''){
+                                data = '-'
+                            }
+                            lastStatus = data
+
+                            st.innerHTML = data;
+                        }
+
+                    },
+                    complete: function(data) {
+
+                        var checkBox = document.getElementById("autoStatusCB");
+                        if (checkBox.checked == true) {
+                            setTimeout(updateStatusField, 200);
+                        } else {
+                            clearTimeout(updateStatusField);
+                        }
+                    }
+                
+
+                });
+                var verb = document.getElementById('idverbose').checked;
+                var st = document.getElementById("verboseSolve");
+                if (verb == true) {
+                    st.style.display = "inline";
+                    $.ajax({
+                            url: '/lastVerboseSolve',
+                            data: {'time': Date.now().toString()},
+                            type: 'post',
+                            success: function(data) {
+                                    // Perform operation on return value
+                                var st = document.getElementById("verboseSolve");
+                                st.innerHTML = data
+                            },
+                            complete: function(data) {
+
+                        }
+                    });
+                }
+                else{
+
+                    st.style.display = "none";
+                }
+            }
+        </script>
+
+
+        <script>
+            var intervalID;
+
+           
+
+
+        </script>
+
+
+        <script>
+            var skyimageMag = .25;
+            var skyBright = 100;
+
+
+            function increaseMagnification() {
+                console.log("mag is", skyimageMag)
+                skyimageMag = skyimageMag * 1.5;
+                var zoom = skyimageMag
+                var sky = document.getElementById("skyImage");
+                var solve = document.getElementById('solu');
+
+
+                sky.style.width = (100 * zoom) + "%";
+                sky.style.height = (100 * zoom) + "%";
+                solve.style.width = (100 * zoom) + "%";
+                solve.style.width = (100 * zoom) + "%";
+
+
+
+            }
+            function brightNormal() {
+                var sky = document.getElementById("skyImage");
+                skyBright = 100
+                sky.style.filter = "brightness("+(skyBright)+"%)";
+            }
+            function brighten() {
+                var sky = document.getElementById("skyImage");
+                skyBright = skyBright * 2;
+                sky.style.filter = "brightness("+(skyBright)+"%)";
+            }
+            function darken() {
+                var sky = document.getElementById("skyImage");
+                skyBright = skyBright / 2;
+                sky.style.filter = "brightness("+(skyBright)+"%)";
+            }
+ 
+
+            function decreaseMagnification() {
+                skyimageMag = skyimageMag / 1.5;
+                if (skyimageMag < .1) {
+                    skyimageMag = 1.;
+                }
+                var zoom = skyimageMag
+                var sky = document.getElementById("skyImage");
+                var solve = document.getElementById('solu');
+
+                sky.style.width = (100 * zoom) + "%";
+                sky.style.height = (100 * zoom) + "%";
+                solve.style.width = (100 * zoom) + "%";
+                solve.style.width = (100 * zoom) + "%";
+
+            }
+        </script>
+        <script src= '../static/js/skySolve.js'></script>
+
+    </body>
+
+</html>

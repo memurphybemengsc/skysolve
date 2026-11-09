@@ -1,0 +1,12 @@
+skysolve_setup.pdf
+skysolve_setup.odt
+static/radec.txt
+static/skysolve.log
+static/obs.log
+static/skysolve.log
+nohup.out
+debug/*
+static/cap*.*
+static/current.jpg
+none
+

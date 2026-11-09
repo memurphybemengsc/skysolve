@@ -1,0 +1,13 @@
+
+[Unit]
+Description=name-of-your-service Service
+After=network-online.target
+
+[Service]
+Type=idle
+User=pi
+ExecStart=/home/pi/skysolve/startEncoder.sh
+Restart=always
+
+[Install]
+WantedBy=network-online.target
