@@ -211,8 +211,9 @@ def delayedStatus(delay, status):
 
 # TODO: Modify method to connect to Indi Camera
 def setupCamera():
+    global indiClient, skyCam, cameraNotPresent, state, skyStatusText
     indiClient = IndiCameraClient()
-    global skyCam, cameraNotPresent, state, skyStatusText
+    skyCam = indiClient
     
     indiClient.connectToIndiServer()
     if indiClient.isIndiConnected:
@@ -285,7 +286,7 @@ switcherWatcherThread.start()
 def solveThread():
     global skyStatusText, focusStd, state, skyCam,  testNdx, camera_Died,\
         solveLog, solveCompleted, debugLastState, lastpictureTime,\
-            solveImage,solveThisImage
+            solveImage,solveThisImage, indiClient
 
     # save the image to be solved in the file system  for the gen() routine to give to the client browser
     def saveImage(frame):
