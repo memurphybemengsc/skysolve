@@ -598,6 +598,14 @@ def zipFilesInDir(dirName, zipFileName):
             filePath = os.path.join(solve_path, 'history', filename)
             # Add file to zip
             zipObj.write(filePath, filename)
+            
+def delayedStatus(delay,status):
+    global skyStatusText
+    time.sleep(delay)
+    skyStatusText = status
+
+        json.dump(skyConfig, f, indent=4)
+            
 
 debugLastState = 'startup'
 
@@ -697,12 +705,6 @@ for i in range(10):
 flasherThread  = threading.Thread(target = flasher)
 flasherThread.start()
 
-def delayedStatus(delay,status):
-    global skyStatusText
-    time.sleep(delay)
-    skyStatusText = status
-
-        json.dump(skyConfig, f, indent=4)
 
 format
 
@@ -754,6 +756,21 @@ solveCnt = 0
 app = Flask(__name__)
 
 skyStatusText = 'Initilizing Camera'
+
+setTimeDate = True
+
+lastmode = state
+
+measureHtmlStack = []
+measureStackLock = threading.Lock()
+allDone = False
+# measure transparency of current image
+
+
+
+readytoSend = False
+message = ''
+statusCols = ['','']
 
 
 @app.route("/StarHistory", methods=['GET','POST'])
@@ -960,7 +977,6 @@ def clearObsLog():
     return Response("observing log cleared")
 
 
-setTimeDate = True
 
 @app.route('/enablesolutionDisplay', methods=['post'])
 def enablesolutionDisplay():
@@ -1014,7 +1030,6 @@ def Focus():
     global focusStd
     return Response(focusStd)
 
-lastmode = state
 
 @app.route('/deleteProfile/<value>', methods=['POST'])
 def deleteProfile(value):
@@ -1134,19 +1149,6 @@ def toggletestMode():
     th.start()
 
     return Response(skyStatusText)
-
-measureHtmlStack = []
-measureStackLock = threading.Lock()
-allDone = False
-# measure transparency of current image
-
-
-
-readytoSend = False
-message = ''
-statusCols = ['','']
-
-    
 
 
     
