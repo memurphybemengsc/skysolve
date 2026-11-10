@@ -39,111 +39,6 @@ import glob
 import logging
 from collections import deque
 from time import perf_counter as precision_timestamp
-debugLastState = 'startup'
-
-solveImage = None
-
-GUIImage = None
-
-indiClient = None
-
-print("argssss", sys.argv, len(sys.argv))
-print('user', getpass.getuser())
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-initGPIO7 = GPIO.input(7)
-if ( not initGPIO7):
-    try:
-        os.system('sudo accesspopup -a')
-    except Exception as e:
-        print('could not switch to access point')
-    
-print("gpio", initGPIO7)
-try:
-    os.system('systemctl restart encodertoSkySafari.service ')
-except Exception as e:
-    print("did not start encoder", e )
-
-usedIndexes = {}
-
-
-
-class Mode(Enum):
-    PAUSED = auto()
-    ALIGN = auto()
-    SOLVING = auto()
-    PLAYBACK = auto()
-    SOLVETHIS = auto()
-
-    # playback and sovlve history images without user clicking on each.
-    AUTOPLAYBACK = auto()
-
-
-
-
-
-app = 30
-solving = False
-maxTime = 50
-searchEnable = False
-solveLog = deque(maxlen=1000)
-ra = 0      #last solved 
-dec = 0     #last solved
-solveStatus = ''
-computedPPa = ''
-
-
-
-focusStd = ''
-state = Mode.ALIGN
-
-testNdx = 0
-lastDisplayedFile = ''
-testFiles = []
-root_path = os.getcwd()
-if len(sys.argv) == 2:
-    root_path = sys.argv[1]
-
-
-solve_path = os.path.join(root_path, 'static')
-capPath = os.path.join(solve_path, 'cap.jpeg')
-guiPath = os.path.join(solve_path, 'gui.jpeg')
-history_path = os.path.join(solve_path, 'history')
-doDebug = False
-logging.basicConfig(filename=os.path.join(solve_path,'skysolve.log'),\
-     format='%(levelname)s %(asctime)s %(message)s',filemode='w',level=logging.WARNING)
-if not os.path.exists(history_path):
-    os.mkdir(history_path)
-demo_path = os.path.join(solve_path, 'demo')
-test_path = '/home/pi/pyPlateSolve/data'
-solveThisImage = ''
-
-saveObs = False
-
-obsList = []
-ndx = 0
-lastObs = ""
-
-cameraNotPresent = True
-
-"""
-skyConfig = {'camera': {'shutter': 1, 'ISO':800, 'frame': '800x600','format': 'jpeg'},
-    'solver':{'currentProfile': 'default', 'startupSolving': False},
-    'observing':{'saveImages': False, 'showSolution': False, 'savePosition': True , 'obsDelta': .1},
-    'solverProfiles' :{\
-  
-        'default': {'name': 'default', 'maxTime': 20, 'solveSigma':5, 'solveDepth':20, 'UselastDelta':False, 'FieldWidthMode':'FieldWidthModeField',
-          'FieldWidthModeaPP': 'checked', 'FieldWidthModeField':"", 'FieldWidthModeOther':'', 'aPPLoValue': 27, 'aPPHiValue': 30,
-          'fieldLoValue': 14, 'fieldHiValue': 0, 'searchRadius': 10,  'solveVerbose':False , "showStars": True ,"plots":True},
-        
-        '25FL' : {'name': '25FL', 'maxTime': 20, 'solveSigma':9, 'solveDepth':20, 'UselastDelta':False, 'FieldWidthMode':'FieldWidthModeField',
-           'FieldWidthModeaPP': 'checked', 'FieldWidthModeField':"", 'FieldWidthModeOther':'', 'aPPLoValue': 27, 'aPPHiValue': 0,
-            'fieldLoValue': 14, 'fieldHiValue': 0, 'searchRadius': 10,  'solveVerbose':False , "showStars": False ,"plots":False},
-         
-        '50FL': {'name':'50FL','maxTime': 20, 'solveSigma':9, 'solveDepth':20, 'UselastDelta':False, 'FieldWidthMode':'FieldWidthModeField',
-           'FieldWidthModeaPP': 'checked', 'FieldWidthModeField':"", 'FieldWidthModeOther':'', 'aPPLoValue': 40, 'aPPHiValue': 0,
-            'fieldLoValue': 22, 'fieldHiValue': 0, 'searchRadius': 10,  'solveVerbose':False , "showStars": False ,"plots":False}}}
-"""
 import builtins
 class ListStream:
     def write(self, s):
@@ -153,18 +48,10 @@ class ListStream:
     def flush(self):
         pass
 
-
-os.system("echo '0' | sudo tee /sys/class/leds/PWR/brightness >>/dev/null")
-flashrequest = 0
-
 def flashled(t):
     os.system("echo '1' | sudo tee /sys/class/leds/PWR/brightness >>/dev/null")
     time.sleep(t)
     os.system("echo '0' | sudo tee /sys/class/leds/PWR/brightness >>/dev/null")
-
-for i in range(10):
-    flashled(.1)
-    time.sleep(.1)
 
 def flasher():
     global flashrequest
@@ -178,36 +65,14 @@ def flasher():
             flashrequest = 0
             time.sleep(.2)
             flashled(.1)
-flasherThread  = threading.Thread(target = flasher)
-flasherThread.start()
 
 def saveConfig():
     with open('skyConfig.json', 'w') as f:
-
-        json.dump(skyConfig, f, indent=4)
-format
-
-# saveConfig()
-print('cwd', os.getcwd())
-
-
-with open(os.path.join(root_path, 'skyConfig.json')) as f:
-    skyConfig = json.load(f)
-
-
-imageName = 'cap.'+skyConfig['camera']['format']
-capPath = os.path.join(solve_path, imageName)
-#print (skyConfig)
-skyCam = None
-skyStatusText = ''
-verboseSolveText = ''
-enableSoldisplay = False
 
 def delayedStatus(delay, status):
     global skyStatusText
     time.sleep(delay)
     skyStatusText = status
-
 
 # TODO: Modify method to connect to Indi Camera
 def setupCamera():
@@ -231,28 +96,16 @@ def setupCamera():
 def getImage():
     indiClient.get_frame()
 
-setupCamera()
-#frameGrabberT = threading.Thread(target=frameGrabberThread)
-#frameGrabberT.start()
-framecnt = 0
 
+class Mode(Enum):
+    PAUSED = auto()
+    ALIGN = auto()
+    SOLVING = auto()
+    PLAYBACK = auto()
+    SOLVETHIS = auto()
 
-lastsolveTime = datetime.now()
-justStarted = True
-camera_Died = False
-solveCompleted = False
-
-lastpictureTime = -1
-framecnt = 0
-
-
-def delayedStatus(delay,status):
-    global skyStatusText
-    time.sleep(delay)
-    skyStatusText = status
-
-
-
+    # playback and sovlve history images without user clicking on each.
+    AUTOPLAYBACK = auto()
 
 
 def shutThread():
@@ -279,8 +132,6 @@ def switchWatcher():
                 th.start()
                 break
 
-switcherWatcherThread  = threading.Thread(target=switchWatcher)
-switcherWatcherThread.start()
 #
 #  this is responsible for getting images from the camera even in align mod
 def solveThread():
@@ -405,15 +256,47 @@ def solveThread():
             solveCompleted = True
             continue
 
-solveT = None
-# print("config",skyConfig['solver'])
-if skyConfig['solver']['startupSolveing']:
-    print("should startup solver now")
-    solveT = threading.Thread(target=solveThread)
-    solveT.start()
+def gen():
+    global skyStatusText, solveT, testNdx,\
+            doDebug, state,  framecnt, lastDisplayedFile,lastmode,\
+                 GUIImage, imageName
+    # Video streaming generator function.
+    print("gen called")
+    lastImageTime = datetime.now()
+    yield (b'\r\n--framex\r\n' b'Content-Type: image/jpeg\r\n\r\n')
+    while True:
+        frame = None
+        if state is Mode.PAUSED:
+            time.sleep(1)
+            continue
 
-solveAvg = 0.
-solveCnt = 0
+        if (state != Mode.ALIGN) and (state != Mode.SOLVING):
+
+            if lastDisplayedFile == solveThisImage:
+                continue
+            print("history",lastDisplayedFile, solveThisImage)
+            lastDisplayedFile = solveThisImage
+            with open(solveThisImage, 'rb') as infile:
+                frame = infile.read()
+
+
+        else:
+            getImage()
+
+        if doDebug:
+            print("frame sent to GUI ", framecnt)
+            if state is Mode.SOLVING:   #count even solve frames in debug
+                framecnt = framecnt + 1
+            
+        if state is Mode.ALIGN:
+            framecnt = framecnt + 1
+            skyStatusText = "frame %d" % (framecnt)
+        
+
+
+        # this send the image and also the header for the next image
+        yield (frame + b'\r\n--framex\r\n' b'Content-Type: image/jpeg\r\n\r\n')
+
 def solve(fn, parms=[]):
     global doDebug, debugLastState, skyStatusText, enableSoldisplay, solveAvg, solveCnt,\
         app, solving, maxTime, solveLog, ra, dec, searchEnable, solveStatus,\
@@ -636,8 +519,236 @@ def solve(fn, parms=[]):
         logging.warning("solve finished with solve state %s", solvestatestr)
     return solved
 
+def setupImageFromFile():
+    global solveThisImage,   skyStatusText
+
+    solveThisImage = testFiles[testNdx]
+    skyStatusText = "%d %s" % (testNdx, testFiles[testNdx])
 
 
+def findHistoryFiles():
+    global saveLog, skyStatusText, testFiles, testNdx,  solveThisImage
+    print("finding files")
+    x = datetime.now() + timedelta(seconds=2)
+    testFiles = [history_path + '/' + fn for fn in os.listdir(
+        history_path) if any(fn.endswith(ext) for ext in ['jpg', 'jpeg', 'png'])]
+    testFiles.sort(key=os.path.getmtime)
+
+
+    print("test files len", len(testFiles))
+
+
+    while datetime.now() < x:
+        time.sleep(1)
+    print("gather done")
+    if len(testFiles) == 0:
+        skyStatusText = "no image files in hisotry"
+    else:
+        skyStatusText = 'PLAYBACK mode ' + \
+            str(len(testFiles)) + " images found."
+        solveThisImage = testFiles[0]
+        print(skyStatusText)
+        time.sleep(3)  # sleep to let status update number of images found
+        setupImageFromFile()
+
+    print(skyStatusText)
+    # change status to display the first file name after 3 seconds
+    th = threading.Thread(target=delayedStatus, args=(5, solveThisImage))
+    th.start()
+
+def reboot3():
+    time.sleep(3)
+    os.system('sudo reboot')
+
+def restartThread():
+    print("restarting thread waiting for 5 seconds" )
+    time.sleep(5)
+    os.system('./restartsky.sh')
+
+def sendStatus(msg, col=1):
+    global readytoSend, message
+    statusCols[col-1] = msg
+    while readytoSend:
+        pass
+    message = ' '.join(statusCols)
+    readytoSend = True
+
+def updateRADEC():
+    global ndx, obsList
+    radec = obsList[ndx]
+    file1 = open(os.path.join(solve_path, "radec.txt"), "w")  # write mode
+    file1.write(radec)
+    file1.close()
+    return Response(radec.rstrip())
+
+# Zip the files from given directory that matches the filter
+def zipFilesInDir(dirName, zipFileName):
+    # create a ZipFile object
+    with ZipFile(zipFileName, 'w') as zipObj:
+        valid_images = [".jpg", ".png", ".jpeg"]
+        imgs = []
+        for f in os.listdir(dirName):
+            ext = os.path.splitext(f)[1]
+            if ext.lower() not in valid_images:
+                continue
+            imgs.append(f)
+        print("images", imgs)
+        for filename in imgs:
+            # create complete filepath of file in directory
+            filePath = os.path.join(solve_path, 'history', filename)
+            # Add file to zip
+            zipObj.write(filePath, filename)
+
+debugLastState = 'startup'
+
+solveImage = None
+
+GUIImage = None
+
+indiClient = None
+
+print("argssss", sys.argv, len(sys.argv))
+print('user', getpass.getuser())
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+initGPIO7 = GPIO.input(7)
+if ( not initGPIO7):
+    try:
+        os.system('sudo accesspopup -a')
+    except Exception as e:
+        print('could not switch to access point')
+    
+print("gpio", initGPIO7)
+try:
+    os.system('systemctl restart encodertoSkySafari.service ')
+except Exception as e:
+    print("did not start encoder", e )
+
+usedIndexes = {}
+app = 30
+solving = False
+maxTime = 50
+searchEnable = False
+solveLog = deque(maxlen=1000)
+ra = 0      #last solved 
+dec = 0     #last solved
+solveStatus = ''
+computedPPa = ''
+
+focusStd = ''
+state = Mode.ALIGN
+
+testNdx = 0
+lastDisplayedFile = ''
+testFiles = []
+root_path = os.getcwd()
+if len(sys.argv) == 2:
+    root_path = sys.argv[1]
+
+
+solve_path = os.path.join(root_path, 'static')
+capPath = os.path.join(solve_path, 'cap.jpeg')
+guiPath = os.path.join(solve_path, 'gui.jpeg')
+history_path = os.path.join(solve_path, 'history')
+doDebug = False
+logging.basicConfig(filename=os.path.join(solve_path,'skysolve.log'),\
+     format='%(levelname)s %(asctime)s %(message)s',filemode='w',level=logging.WARNING)
+if not os.path.exists(history_path):
+    os.mkdir(history_path)
+demo_path = os.path.join(solve_path, 'demo')
+test_path = '/home/pi/pyPlateSolve/data'
+solveThisImage = ''
+
+saveObs = False
+
+obsList = []
+ndx = 0
+lastObs = ""
+
+cameraNotPresent = True
+
+"""
+skyConfig = {'camera': {'shutter': 1, 'ISO':800, 'frame': '800x600','format': 'jpeg'},
+    'solver':{'currentProfile': 'default', 'startupSolving': False},
+    'observing':{'saveImages': False, 'showSolution': False, 'savePosition': True , 'obsDelta': .1},
+    'solverProfiles' :{\
+  
+        'default': {'name': 'default', 'maxTime': 20, 'solveSigma':5, 'solveDepth':20, 'UselastDelta':False, 'FieldWidthMode':'FieldWidthModeField',
+          'FieldWidthModeaPP': 'checked', 'FieldWidthModeField':"", 'FieldWidthModeOther':'', 'aPPLoValue': 27, 'aPPHiValue': 30,
+          'fieldLoValue': 14, 'fieldHiValue': 0, 'searchRadius': 10,  'solveVerbose':False , "showStars": True ,"plots":True},
+        
+        '25FL' : {'name': '25FL', 'maxTime': 20, 'solveSigma':9, 'solveDepth':20, 'UselastDelta':False, 'FieldWidthMode':'FieldWidthModeField',
+           'FieldWidthModeaPP': 'checked', 'FieldWidthModeField':"", 'FieldWidthModeOther':'', 'aPPLoValue': 27, 'aPPHiValue': 0,
+            'fieldLoValue': 14, 'fieldHiValue': 0, 'searchRadius': 10,  'solveVerbose':False , "showStars": False ,"plots":False},
+         
+        '50FL': {'name':'50FL','maxTime': 20, 'solveSigma':9, 'solveDepth':20, 'UselastDelta':False, 'FieldWidthMode':'FieldWidthModeField',
+           'FieldWidthModeaPP': 'checked', 'FieldWidthModeField':"", 'FieldWidthModeOther':'', 'aPPLoValue': 40, 'aPPHiValue': 0,
+            'fieldLoValue': 22, 'fieldHiValue': 0, 'searchRadius': 10,  'solveVerbose':False , "showStars": False ,"plots":False}}}
+"""
+
+
+os.system("echo '0' | sudo tee /sys/class/leds/PWR/brightness >>/dev/null")
+flashrequest = 0
+
+for i in range(10):
+    flashled(.1)
+    time.sleep(.1)
+
+flasherThread  = threading.Thread(target = flasher)
+flasherThread.start()
+
+def delayedStatus(delay,status):
+    global skyStatusText
+    time.sleep(delay)
+    skyStatusText = status
+
+        json.dump(skyConfig, f, indent=4)
+
+format
+
+# saveConfig()
+print('cwd', os.getcwd())
+
+
+with open(os.path.join(root_path, 'skyConfig.json')) as f:
+    skyConfig = json.load(f)
+
+
+imageName = 'cap.'+skyConfig['camera']['format']
+capPath = os.path.join(solve_path, imageName)
+#print (skyConfig)
+skyCam = None
+skyStatusText = ''
+verboseSolveText = ''
+enableSoldisplay = False
+
+
+setupCamera()
+#frameGrabberT = threading.Thread(target=frameGrabberThread)
+#frameGrabberT.start()
+framecnt = 0
+
+
+lastsolveTime = datetime.now()
+justStarted = True
+camera_Died = False
+solveCompleted = False
+
+lastpictureTime = -1
+framecnt = 0
+
+switcherWatcherThread  = threading.Thread(target=switchWatcher)
+switcherWatcherThread.start()
+
+solveT = None
+# print("config",skyConfig['solver'])
+if skyConfig['solver']['startupSolveing']:
+    print("should startup solver now")
+    solveT = threading.Thread(target=solveThread)
+    solveT.start()
+
+solveAvg = 0.
+solveCnt = 0
 
 
 app = Flask(__name__)
@@ -646,7 +757,6 @@ skyStatusText = 'Initilizing Camera'
 
 
 @app.route("/StarHistory", methods=['GET','POST'])
-
 def showStarHistoryPage():
     return render_template('starHistory.html')
 
@@ -701,7 +811,9 @@ def Align():
         state = Mode.ALIGN
         skyStatusText = 'Align Mode'
     return Response(skyStatusText)
+
 from subprocess import PIPE, run
+
 @app.route('/update',methods=['POST'])
 def updateskysolve():
     global solveLog
@@ -763,9 +875,6 @@ def Solving():
     return Response(skyStatusText)
 
 
-
-
-
 @app.route('/setISO/<value>', methods=['POST'])
 def setISO(value):
 
@@ -797,9 +906,6 @@ def setFormat(value):
     saveConfig()
 
     return Response(status=204)
-
-
-
 
 
 @app.route('/setShutter/<value>', methods=['POST'])
@@ -909,47 +1015,6 @@ def Focus():
     return Response(focusStd)
 
 lastmode = state
-def gen():
-    global skyStatusText, solveT, testNdx,\
-            doDebug, state,  framecnt, lastDisplayedFile,lastmode,\
-                 GUIImage, imageName
-    # Video streaming generator function.
-    print("gen called")
-    lastImageTime = datetime.now()
-    yield (b'\r\n--framex\r\n' b'Content-Type: image/jpeg\r\n\r\n')
-    while True:
-        frame = None
-        if state is Mode.PAUSED:
-            time.sleep(1)
-            continue
-
-        if (state != Mode.ALIGN) and (state != Mode.SOLVING):
-
-            if lastDisplayedFile == solveThisImage:
-                continue
-            print("history",lastDisplayedFile, solveThisImage)
-            lastDisplayedFile = solveThisImage
-            with open(solveThisImage, 'rb') as infile:
-                frame = infile.read()
-
-
-        else:
-            getImage()
-
-        if doDebug:
-            print("frame sent to GUI ", framecnt)
-            if state is Mode.SOLVING:   #count even solve frames in debug
-                framecnt = framecnt + 1
-            
-        if state is Mode.ALIGN:
-            framecnt = framecnt + 1
-            skyStatusText = "frame %d" % (framecnt)
-        
-
-
-        # this send the image and also the header for the next image
-        yield (frame + b'\r\n--framex\r\n' b'Content-Type: image/jpeg\r\n\r\n')
-
 
 @app.route('/deleteProfile/<value>', methods=['POST'])
 def deleteProfile(value):
@@ -1027,48 +1092,6 @@ def demoMode():
     return Response(skyStatusText)
 
 
-def setupImageFromFile():
-    global solveThisImage,   skyStatusText
-
-    solveThisImage = testFiles[testNdx]
-    skyStatusText = "%d %s" % (testNdx, testFiles[testNdx])
-
-
-def findHistoryFiles():
-    global saveLog, skyStatusText, testFiles, testNdx,  solveThisImage
-    print("finding files")
-    x = datetime.now() + timedelta(seconds=2)
-    testFiles = [history_path + '/' + fn for fn in os.listdir(
-        history_path) if any(fn.endswith(ext) for ext in ['jpg', 'jpeg', 'png'])]
-    testFiles.sort(key=os.path.getmtime)
-
-
-    print("test files len", len(testFiles))
-
-
-    while datetime.now() < x:
-        time.sleep(1)
-    print("gather done")
-    if len(testFiles) == 0:
-        skyStatusText = "no image files in hisotry"
-    else:
-        skyStatusText = 'PLAYBACK mode ' + \
-            str(len(testFiles)) + " images found."
-        solveThisImage = testFiles[0]
-        print(skyStatusText)
-        time.sleep(3)  # sleep to let status update number of images found
-        setupImageFromFile()
-
-    print(skyStatusText)
-    # change status to display the first file name after 3 seconds
-    th = threading.Thread(target=delayedStatus, args=(5, solveThisImage))
-    th.start()
-
-
-def reboot3():
-    time.sleep(3)
-    os.system('sudo reboot')
-
 
 @app.route('/shutdown', methods=['post'])
 def shutdown():
@@ -1087,11 +1110,6 @@ def reboot():
     skyStatusText = "reboot in 3 seconds goodbye. You will need to reload this page after about 3 minutes"
     return Response(skyStatusText)
 
-
-def restartThread():
-    print("restarting thread waiting for 5 seconds" )
-    time.sleep(5)
-    os.system('./restartsky.sh')
 
 
 @app.route('/restartc', methods=['POST'])
@@ -1128,13 +1146,6 @@ readytoSend = False
 message = ''
 statusCols = ['','']
 
-def sendStatus(msg, col=1):
-    global readytoSend, message
-    statusCols[col-1] = msg
-    while readytoSend:
-        pass
-    message = ' '.join(statusCols)
-    readytoSend = True
     
 
 
@@ -1249,14 +1260,6 @@ def startObs():
     return updateRADEC()
 
 
-def updateRADEC():
-    global ndx, obsList
-    radec = obsList[ndx]
-    file1 = open(os.path.join(solve_path, "radec.txt"), "w")  # write mode
-    file1.write(radec)
-    file1.close()
-    return Response(radec.rstrip())
-
 
 @app.route('/nextObs', methods=['POST'])
 def nextObs():
@@ -1284,24 +1287,6 @@ def solveThis():
     skyStatusText = "Solving"
     return Response(skyStatusText)
 
-
-# Zip the files from given directory that matches the filter
-def zipFilesInDir(dirName, zipFileName):
-    # create a ZipFile object
-    with ZipFile(zipFileName, 'w') as zipObj:
-        valid_images = [".jpg", ".png", ".jpeg"]
-        imgs = []
-        for f in os.listdir(dirName):
-            ext = os.path.splitext(f)[1]
-            if ext.lower() not in valid_images:
-                continue
-            imgs.append(f)
-        print("images", imgs)
-        for filename in imgs:
-            # create complete filepath of file in directory
-            filePath = os.path.join(solve_path, 'history', filename)
-            # Add file to zip
-            zipObj.write(filePath, filename)
 
 
 @app.route('/clearImages', methods=['POST'])
